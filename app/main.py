@@ -1,6 +1,7 @@
 import cv2
 from io import BytesIO
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 from PIL import Image
 import requests
@@ -9,7 +10,13 @@ from tensorflow_hub import KerasLayer
 import uvicorn
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def index():
