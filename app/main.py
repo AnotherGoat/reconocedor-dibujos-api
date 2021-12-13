@@ -1,11 +1,11 @@
 import cv2
 from io import BytesIO
 from fastapi import FastAPI
-import numpy as np
+from numpy import array, argmax
 from PIL import Image
 import requests
-import tensorflow as tf
-import tensorflow_hub as hub
+from tensorflow import keras, reshape
+from tensorflow_hub import KerasLayer
 import uvicorn
 
 app = FastAPI()
@@ -23,7 +23,7 @@ def predict():
 
 
 def importar_modelo(ruta):
-    return tf.keras.models.load_model(ruta, custom_objects={'KerasLayer': hub.KerasLayer})
+    return keras.models.load_model(ruta, custom_objects={'KerasLayer': KerasLayer})
 
 
 def categorizar(modelo, url):
@@ -40,7 +40,7 @@ def categorizar(modelo, url):
     img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
     # print('Tamaño nuevo:', img.shape)
 
-    prediccion = modelo.predict(tf.reshape(img, [-1, 224, 224, 3]))
+    prediccion = modelo.predict(reshape(img, [-1, 224, 224, 3]))
     resultado = np.argmax(prediccion[0], axis=-1)
 
     categorias = ["data_table", "image", "radio_button_checked", "slider", "text_area"]
