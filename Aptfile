@@ -1,0 +1,4 @@
+# Dependencias para CV2
+ffmpeg
+libsm6
+libxext6
