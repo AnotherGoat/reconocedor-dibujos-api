@@ -1,6 +1,6 @@
 import cv2
 from io import BytesIO
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 import numpy as np
 from PIL import Image
 import requests
@@ -17,17 +17,17 @@ def index():
 
 
 @app.post('/predict')
-def predict():
+def predict(imagen: UploadFile = File(...)):
     modelo = importar_modelo("../model/model.h5")
-    return categorizar(modelo, "")
+    return categorizar(modelo, imagen)
 
 
 def importar_modelo(ruta):
     return keras.models.load_model(ruta, custom_objects={'KerasLayer': KerasLayer})
 
 
-def categorizar(modelo, url):
-    respuesta = requests.get(url)
+def categorizar(modelo, imagen):
+    respuesta = requests.get(imagen)
     img = Image.open(BytesIO(respuesta.content))
 
     # Elimina el canal alpha, solo deja RGB
