@@ -3,6 +3,6 @@ numpy==1.19.5
 opencv_python==4.5.4.60
 Pillow==8.4.0
 requests==2.25.1
-tensorflow==2.6.0
+tensorflow-cpu==2.6.0
 tensorflow_hub==0.12.0
 uvicorn==0.15.0
