@@ -9,13 +9,19 @@ import tensorflow_hub as hub
 from urllib import request
 
 app = FastAPI()
+origins = [
+    "http://localhost:*",
+    "https://reconocedor-dibujos.herokuapp.com:*",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+modelo = tf.keras.models.load_model("model/model.h5", custom_objects={'KerasLayer': hub.KerasLayer})
 
 
 @app.get("/")
@@ -29,9 +35,8 @@ class Imagen(BaseModel):
 
 @app.post('/predict')
 def predict(imagen: Imagen):
-    modelo = importar_modelo("model/model.h5")
     img = leer_imagen(imagen.uri)
-    return evaluar(modelo, img)
+    return evaluar(img)
 
 
 def importar_modelo(ruta):
@@ -43,7 +48,7 @@ def leer_imagen(data_uri):
     return Image.open(BytesIO(respuesta))
 
 
-def evaluar(modelo, img):
+def evaluar(img):
     # Pasa la imagen a RGB
     img = imagen_a_rgb(img)
 
