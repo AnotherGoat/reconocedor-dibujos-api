@@ -9,13 +9,9 @@ import tensorflow_hub as hub
 from urllib import request
 
 app = FastAPI()
-origins = [
-    "http://localhost:*",
-    "https://reconocedor-dibujos.herokuapp.com:*",
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
