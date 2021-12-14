@@ -21,9 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-modelo = tf.keras.models.load_model("model/model.h5", custom_objects={'KerasLayer': hub.KerasLayer})
-
-
 @app.get("/")
 def index():
     return {"mensaje": "Página de inicio de la API del reconocedor de dibujos"}
@@ -36,7 +33,8 @@ class Imagen(BaseModel):
 @app.post('/predict')
 def predict(imagen: Imagen):
     img = leer_imagen(imagen.uri)
-    return evaluar(img)
+    modelo = importar_modelo("model/model.h5")
+    return evaluar(modelo, img)
 
 
 def importar_modelo(ruta):
@@ -48,7 +46,7 @@ def leer_imagen(data_uri):
     return Image.open(BytesIO(respuesta))
 
 
-def evaluar(img):
+def evaluar(modelo, img):
     # Pasa la imagen a RGB
     img = imagen_a_rgb(img)
 
@@ -57,6 +55,7 @@ def evaluar(img):
 
     # Realiza la predicción
     prediccion = modelo.predict(tf.reshape(img, [-1, 224, 224, 3]))
+    del modelo # Libera memoria
     resultado = np.argmax(prediccion[0], axis=-1)
 
     categorias = ["Checkbox (checked)", "Checkbox (unchecked)", "Data Table", "Dropdown Menu",
