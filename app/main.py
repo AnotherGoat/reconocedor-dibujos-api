@@ -44,14 +44,38 @@ def leer_imagen(data_uri):
 
 
 def evaluar(modelo, img):
-    # Elimina el canal alpha, solo deja RGB
-    img = img.convert('RGB')
-    img = np.array(img).astype(float) / 255
+    # Pasa la imagen a RGB
+    img = imagen_a_rgb(img)
 
+    # Se divide por 255 para que sea la forma de entrada esperada
+    img = np.array(img).astype(int) / 255
+
+    # Realiza la predicción
     prediccion = modelo.predict(tf.reshape(img, [-1, 224, 224, 3]))
     resultado = np.argmax(prediccion[0], axis=-1)
 
-    categorias = ["data_table", "image", "radio_button_checked", "slider", "text_area"]
+    categorias = ["Checkbox (checked)", "Checkbox (unchecked)", "Data Table", "Dropdown Menu",
+                  "Floating Action Button", "Image", "Label", "Radio Button (checked)",
+                  "Radio Button (unchecked)", "Slider", "Switch (disabled)", "Switch (enabled)",
+                  "Text Area", "Tooltip"]
     print("Es " + categorias[resultado])
 
     return categorias[resultado]
+
+
+def imagen_a_rgb(img):
+    # Convierte imagen a RGB, tomando en cuenta la transparencia
+    img_rgb = Image.new("RGB", img.size, (255, 255, 255))
+    img_rgb.paste(img, mask=img.split()[3])  # 3 is the alpha channel
+    return img_rgb
+
+
+def imagen_info(img):
+    print("Format: ", img.format)
+    print("Mode: ", img.mode)
+    print("Size: ", img.size)
+    print("Width: ", img.width)
+    print("Height: ", img.height)
+    print("Image Palette: ", img.palette)
+    print("Image Info: ", img.info)
+    print("First Pixel: ", img.getpixel((0, 0)))
